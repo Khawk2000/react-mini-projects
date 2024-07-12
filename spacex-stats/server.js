@@ -3,6 +3,8 @@ var { createHandler } = require("graphql-http/lib/use/express");
 var { buildSchema } = require("graphql");
 var { ruruHTML } = require("ruru/server");
 const axios = require("axios");
+const cors = require('cors')
+const path = require('path')
 
 var schema = buildSchema(`
     type Cores {
@@ -46,6 +48,8 @@ const root = {
 
 var app = express();
 
+app.use(cors())
+
 // Serve the GraphiQL IDE.
 app.get("/", (_req, res) => {
   res.type("html");
@@ -53,13 +57,19 @@ app.get("/", (_req, res) => {
 });
 
 // Create and use the GraphQL handler.
-app.all(
+app.use(
   "/graphql",
   createHandler({
     schema: schema,
     rootValue: root,
   })
 );
+
+app.use(express.static('public'));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'public', 'index.html'))
+})
 
 // Start the server at port
 app.listen(4000);
