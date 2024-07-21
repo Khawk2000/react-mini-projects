@@ -1,0 +1,41 @@
+{
+  "posts": [
+    {
+      "title": "Post 1",
+      "body": "This is the post body",
+      "publishedAt": "7/21/2024",
+      "id": "1"
+    },
+    {
+      "title": "Post Two",
+      "body": "This is the post body",
+      "publishedAt": "2024-07-14",
+      "id": "2"
+    },
+    {
+      "id": "3",
+      "title": "Post Three",
+      "body": "This is the post body",
+      "publishedAt": "7/21/2024"
+    },
+    {
+      "id": "b2d9",
+      "title": "Post Four",
+      "body": "Testing Postman",
+      "publishedAt": "7/21/24"
+    },
+    {
+      "title": "Testing this out",
+      "body": "Hi there this is some gibberish to test to see if this is acutally a multiline body container or if it will only accept a single line, looky there it worked",
+      "publishedAt": "2024-07-21",
+      "id": "18pdzSl"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "email": "johndoe@gmail.com"
+    }
+  ]
+}
