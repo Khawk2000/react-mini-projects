@@ -18,7 +18,14 @@ const Map = ({ eventData, searchItems }) => {
           key={ev.id}
           lat={ev.geometries[0].coordinates[1]}
           lng={ev.geometries[0].coordinates[0]}
-          onClick={() => setLocationInfo({ id: ev.id, title: ev.title })}
+          onClick={() =>
+            setLocationInfo({
+              id: ev.id,
+              title: ev.title,
+              description: ev.description,
+              date: ev.geometries[0].date,
+            })
+          }
           type="fire"
         />
       );
@@ -28,7 +35,14 @@ const Map = ({ eventData, searchItems }) => {
           key={ev.id}
           lat={ev.geometries[0].coordinates[1]}
           lng={ev.geometries[0].coordinates[0]}
-          onClick={() => setLocationInfo({ id: ev.id, title: ev.title })}
+          onClick={() =>
+            setLocationInfo({
+              id: ev.id,
+              title: ev.title,
+              description: ev.description,
+              date: ev.geometries[0].date,
+            })
+          }
           type="storm"
         />
       );
@@ -38,7 +52,14 @@ const Map = ({ eventData, searchItems }) => {
           key={ev.id}
           lat={ev.geometries[0].coordinates[1]}
           lng={ev.geometries[0].coordinates[0]}
-          onClick={() => setLocationInfo({ id: ev.id, title: ev.title })}
+          onClick={() =>
+            setLocationInfo({
+              id: ev.id,
+              title: ev.title,
+              description: ev.description,
+              date: ev.geometries[0].date,
+            })
+          }
           type="volcano"
         />
       );
@@ -48,7 +69,14 @@ const Map = ({ eventData, searchItems }) => {
           key={ev.id}
           lat={ev.geometries[0].coordinates[1]}
           lng={ev.geometries[0].coordinates[0]}
-          onClick={() => setLocationInfo({ id: ev.id, title: ev.title })}
+          onClick={() =>
+            setLocationInfo({
+              id: ev.id,
+              title: ev.title,
+              description: ev.description,
+              date: ev.geometries[0].date,
+            })
+          }
           type="ice"
         />
       );

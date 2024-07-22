@@ -4,6 +4,7 @@ import Map from "./components/Map";
 import Loader from "./components/Loader";
 import Header from "./components/Header";
 import Search from "./components/Search";
+import Footer from "./components/Footer";
 
 function App() {
   const [eventData, setEventData] = useState([]);
@@ -23,7 +24,6 @@ function App() {
     fetchEvents();
   }, []);
 
-  console.log(searchItems);
   return (
     <>
       <Header />
@@ -39,6 +39,7 @@ function App() {
       {!loading && (
         <Search setSearching={setSearching} setSearchItems={setSearchItems} />
       )}
+      <Footer />
     </>
   );
 }

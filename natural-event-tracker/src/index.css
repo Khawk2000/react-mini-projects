@@ -22,6 +22,24 @@ body {
     text-align: center;
 }
 
+.footer {
+    padding: 10px;
+    background: linear-gradient(135deg, rgba(92,64,51,1) 10%, rgba(255,0,0,1) 35%, rgba(32,195,208,1) 65%, rgba(0,0,140,1) 90%);
+    color: white;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.footer h1 {
+    font-size: 25px;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
 .map {
     width: 100vw;
     height: 100vh;
