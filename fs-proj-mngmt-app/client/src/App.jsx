@@ -38,8 +38,8 @@ function App() {
           <Header />
           <div className="container">
             <Routes>
-              <Route exact path="/" Component={Home} />
               <Route path="/projects/:id" Component={Project} />
+              <Route exact path="/" Component={Home} />
               <Route path="*" Component={NotFound} />
             </Routes>
           </div>
