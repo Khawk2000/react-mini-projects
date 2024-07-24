@@ -10,7 +10,7 @@ const Project = () => {
   const { id } = useParams();
   const { loading, error, data } = useQuery(GET_PROJECT, {
     variables: {
-      id,
+      id: id,
     },
   });
 
