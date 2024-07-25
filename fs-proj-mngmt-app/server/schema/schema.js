@@ -2,6 +2,7 @@ const Project = require("../models/Project");
 const Client = require("../models/Client");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const {
   GraphQLObjectType,
@@ -17,11 +18,30 @@ const {
 const UserType = new GraphQLObjectType({
   name: "User",
   fields: () => ({
-    id: { type: GraphQLID },
+    id: {
+      type: GraphQLID,
+      resolve(parent, args) {
+        return parent._id;
+      },
+    },
     firstname: { type: GraphQLString },
     lastname: { type: GraphQLString },
     email: { type: GraphQLString },
     password: { type: GraphQLString },
+  }),
+});
+
+//Auth Type
+const AuthType = new GraphQLObjectType({
+  name: "Auth",
+  fields: () => ({
+    user: {
+      type: GraphQLNonNull(UserType),
+      resolve(parent, args) {
+        return parent.user;
+      },
+    },
+    token: { type: GraphQLNonNull(GraphQLString) },
   }),
 });
 
@@ -33,6 +53,12 @@ const ClientType = new GraphQLObjectType({
     name: { type: GraphQLString },
     email: { type: GraphQLString },
     phone: { type: GraphQLString },
+    user: {
+      type: UserType,
+      resolve(parent, args) {
+        return User.findById(parent.userId);
+      },
+    },
   }),
 });
 
@@ -56,6 +82,13 @@ const ProjectType = new GraphQLObjectType({
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
   fields: {
+    user: {
+      type: UserType,
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        return User.findById(args.id);
+      },
+    },
     clients: {
       type: new GraphQLList(ClientType),
       resolve(parent, args) {
@@ -90,8 +123,8 @@ const mutation = new GraphQLObjectType({
   name: "Mutation",
   fields: {
     // Add a User
-    addUser: {
-      type: UserType,
+    signupUser: {
+      type: AuthType,
       args: {
         firstname: { type: GraphQLNonNull(GraphQLString) },
         lastname: { type: GraphQLNonNull(GraphQLString) },
@@ -114,7 +147,37 @@ const mutation = new GraphQLObjectType({
         const salt = await bcrypt.genSalt(10);
         newUser.password = await bcrypt.hash(newUser.password, salt);
 
-        return newUser.save();
+        const signedUser = await newUser.save();
+
+        const token = jwt.sign({ userId: signedUser._id }, process.env.SECRET, {
+          expiresIn: "2h",
+        });
+        return { user: signedUser, token };
+      },
+    },
+    // Login User
+    loginUser: {
+      type: AuthType,
+      args: {
+        email: { type: GraphQLNonNull(GraphQLString) },
+        password: { type: GraphQLNonNull(GraphQLString) },
+      },
+      async resolve(parent, args) {
+        const user = await User.findOne({ email: args.email });
+        if (!user) {
+          throw new Error("User does not exist, please use signup instead");
+        }
+        const match = await bcrypt.compare(args.password, user.password);
+
+        if (!match) {
+          throw new Error("Incorrect email or password");
+        }
+
+        const token = jwt.sign({ userId: user._id }, process.env.SECRET, {
+          expiresIn: "2h",
+        });
+
+        return { user, token };
       },
     },
     // Add a client
@@ -124,12 +187,14 @@ const mutation = new GraphQLObjectType({
         name: { type: GraphQLNonNull(GraphQLString) },
         email: { type: GraphQLNonNull(GraphQLString) },
         phone: { type: GraphQLNonNull(GraphQLString) },
+        userId: { type: GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, args) {
         const client = new Client({
           name: args.name,
           email: args.email,
           phone: args.phone,
+          userId: args.userId,
         });
         return client.save();
       },
