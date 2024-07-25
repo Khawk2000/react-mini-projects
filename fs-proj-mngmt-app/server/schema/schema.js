@@ -1,5 +1,7 @@
 const Project = require("../models/Project");
 const Client = require("../models/Client");
+const User = require("../models/User");
+const bcrypt = require("bcrypt");
 
 const {
   GraphQLObjectType,
@@ -10,6 +12,18 @@ const {
   GraphQLNonNull,
   GraphQLEnumType,
 } = require("graphql");
+
+//User Type
+const UserType = new GraphQLObjectType({
+  name: "User",
+  fields: () => ({
+    id: { type: GraphQLID },
+    firstname: { type: GraphQLString },
+    lastname: { type: GraphQLString },
+    email: { type: GraphQLString },
+    password: { type: GraphQLString },
+  }),
+});
 
 //Client Type
 const ClientType = new GraphQLObjectType({
@@ -75,6 +89,34 @@ const RootQuery = new GraphQLObjectType({
 const mutation = new GraphQLObjectType({
   name: "Mutation",
   fields: {
+    // Add a User
+    addUser: {
+      type: UserType,
+      args: {
+        firstname: { type: GraphQLNonNull(GraphQLString) },
+        lastname: { type: GraphQLNonNull(GraphQLString) },
+        email: { type: GraphQLNonNull(GraphQLString) },
+        password: { type: GraphQLNonNull(GraphQLString) },
+      },
+      async resolve(parent, args) {
+        const newUser = new User({
+          firstname: args.firstname,
+          lastname: args.lastname,
+          email: args.email,
+          password: args.password,
+        });
+
+        const user = await User.findOne({ email: newUser.email });
+        if (user) {
+          throw new Error("That email is already being used");
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        newUser.password = await bcrypt.hash(newUser.password, salt);
+
+        return newUser.save();
+      },
+    },
     // Add a client
     addClient: {
       type: ClientType,
