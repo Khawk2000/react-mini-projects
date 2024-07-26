@@ -38,3 +38,12 @@ body {
 .icon {
     margin-right: 5px;
 }
+
+.signup-link {
+    text-decoration: none !important;
+    color: black;
+}
+
+.signup-link:hover {
+    color: blue;
+}

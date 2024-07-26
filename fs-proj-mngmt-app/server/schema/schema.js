@@ -180,6 +180,27 @@ const mutation = new GraphQLObjectType({
         return { user, token };
       },
     },
+    // Delete a User
+    deleteUser: {
+      type: UserType,
+      args: {
+        id: { type: GraphQLNonNull(GraphQLID) },
+      },
+      resolve(parent, args) {
+        Client.find({ userId: args.id }).then((clients) => {
+          clients.forEach(async (client) => {
+            Project.find({ clientId: client.id }).then((projects) => {
+              projects.forEach(async (project) => {
+                await project.deleteOne();
+              });
+            });
+            await client.deleteOne();
+          });
+        });
+
+        return User.findByIdAndDelete(args.id);
+      },
+    },
     // Add a client
     addClient: {
       type: ClientType,
