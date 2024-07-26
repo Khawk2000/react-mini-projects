@@ -5,7 +5,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Project from "./pages/Project";
-import Login from "./pages/Login";
+import Login from "./pages/SignUp";
+import SignUp from "./pages/SignUp";
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -39,7 +40,7 @@ function App() {
           <Header />
           <div className="container">
             <Routes>
-              <Route path="/login" Component={Login} />
+              <Route path="/signup" Component={SignUp} />
               <Route path="/projects/:id" Component={Project} />
               <Route exact path="/" Component={Home} />
               <Route path="*" Component={NotFound} />
