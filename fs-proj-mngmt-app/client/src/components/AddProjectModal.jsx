@@ -5,6 +5,7 @@ import { GET_PROJECTS } from "../queries/projectQueries";
 import { ADD_PROJECT } from "../mutations/projectMutations";
 import { GET_CLIENTS } from "../queries/clientQueries";
 import { useAuthContext } from "../hooks/useAuthContext";
+import PropTypes from "prop-types";
 
 const AddProjectModal = ({ clients }) => {
   const [name, setName] = useState("");
@@ -167,6 +168,10 @@ const AddProjectModal = ({ clients }) => {
       )}
     </>
   );
+};
+
+AddProjectModal.propTypes = {
+  clients: PropTypes.object,
 };
 
 export default AddProjectModal;
