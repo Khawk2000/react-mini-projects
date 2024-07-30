@@ -3,22 +3,34 @@ import { FaUser } from "react-icons/fa";
 import { useMutation } from "@apollo/client";
 import { ADD_CLIENT } from "../mutations/clientMutations";
 import { GET_CLIENTS } from "../queries/clientQueries";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 const AddClientModal = () => {
+  const token = useAuthContext();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [userId, setUserId] = useState(token.token.userId);
 
   const [addClient] = useMutation(ADD_CLIENT, {
     variables: {
       name,
       email,
       phone,
+      userId,
     },
     update(cache, { data: { addClient } }) {
-      const { clients } = cache.readQuery({ query: GET_CLIENTS });
+      const { clients } = cache.readQuery({
+        query: GET_CLIENTS,
+        variables: {
+          userId: userId,
+        },
+      });
       cache.writeQuery({
         query: GET_CLIENTS,
+        variables: {
+          userId: userId,
+        },
         data: { clients: [...clients, addClient] },
       });
     },
@@ -26,11 +38,10 @@ const AddClientModal = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (name === "" || email === "" || phone === "") {
+    if (name === "" || email === "" || phone === "" || userId === "") {
       return alert("Please fill in all fields");
     }
-
-    addClient(name, email, phone);
+    addClient(name, email, phone, userId);
     setName("");
     setEmail("");
     setPhone("");

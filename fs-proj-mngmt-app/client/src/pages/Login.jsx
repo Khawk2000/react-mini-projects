@@ -1,41 +1,35 @@
 import { useState } from "react";
 import logo from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import { SIGNUP_USER } from "../mutations/userMutations";
+import { LOGIN_USER } from "../mutations/userMutations";
 import { useMutation } from "@apollo/client";
 import { useAuthContext } from "../hooks/useAuthContext";
 
-const SignUp = () => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [pswd, setPswd] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const navigate = useNavigate();
   const { dispatch } = useAuthContext();
+  const navigate = useNavigate();
 
-  const [signupUser] = useMutation(SIGNUP_USER, {
+  const [loginUser] = useMutation(LOGIN_USER, {
     variables: {
-      firstname: firstName,
-      lastname: lastName,
       email,
       password: pswd,
     },
-    onCompleted: ({ signupUser }) => {
-      localStorage.setItem("token", signupUser.token);
-      dispatch({ type: "LOGIN", payload: signupUser.token });
+    onCompleted: ({ loginUser }) => {
+      localStorage.setItem("token", loginUser.token);
+      dispatch({ type: "LOGIN", payload: loginUser.token });
       navigate("/");
     },
   });
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (email === "" || pswd === "" || firstName === "" || lastName === "") {
+    if (email === "" || pswd === "") {
       return alert("Please fill in all fields");
     }
 
-    signupUser(firstName, lastName, email, pswd);
-    setFirstName("");
-    setLastName("");
+    loginUser(email, pswd);
     setEmail("");
     setPswd("");
   };
@@ -45,32 +39,10 @@ const SignUp = () => {
       onSubmit={onSubmit}
       className="d-flex align-items-center justify-content-center vh-100"
     >
-      <div className="form-outline w-50 h-75 mb-4 bg-secondary rounded d-flex flex-column align-items-center">
+      <div className="form-outline w-50 h-50 mb-4 bg-secondary rounded d-flex flex-column align-items-center">
         <div className="d-flex w-100 align-items-center justify-content-center">
           <img src={logo} alt="" className="ml-5" />
-          <legend className="w-50 mt-5 mb-5">ProjMan Sign Up</legend>
-        </div>
-        <div className="form-floating mb-4 w-50 p-10">
-          <input
-            type="text"
-            className="form-control"
-            id="firstNameInput"
-            placeholder="John"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <label htmlFor="firstNameInput">First Name</label>
-        </div>
-        <div className="form-floating mb-4 w-50 p-10">
-          <input
-            type="text"
-            className="form-control"
-            id="lastNameInput"
-            placeholder="Doe"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-          <label htmlFor="lastNameInput">Last Name</label>
+          <legend className="w-50 mt-5 mb-5">ProjMan Login</legend>
         </div>
         <div className="form-floating mb-4 w-50 p-10">
           <input
@@ -96,15 +68,15 @@ const SignUp = () => {
         </div>
         <div className="d-grid gap-2 col-4 mt-5">
           <button className="btn btn-secondary" type="submit">
-            Sign Up
+            Login
           </button>
         </div>
-        <Link to="/login" className="mt-3 signup-link">
-          Already have an account?
+        <Link to="/signup" className="mt-3 signup-link">
+          Create an account?
         </Link>
       </div>
     </form>
   );
 };
 
-export default SignUp;
+export default Login;

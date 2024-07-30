@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 const GET_PROJECTS = gql`
-  query getProjects {
-    projects {
+  query getProjects($clientIds: [ID!]!) {
+    projects(clientIds: $clientIds) {
       id
       name
       status

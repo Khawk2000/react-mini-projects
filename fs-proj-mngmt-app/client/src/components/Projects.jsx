@@ -2,12 +2,22 @@ import { GET_PROJECTS } from "../queries/projectQueries";
 import Spinner from "./Spinner";
 import { useQuery } from "@apollo/client";
 import ProjectCard from "./ProjectCard";
+import PropTypes from "prop-types";
 
-const Projects = () => {
-  const { loading, error, data } = useQuery(GET_PROJECTS);
+const Projects = ({ clients }) => {
+  var ids = [];
+  clients.clients.forEach((client) => {
+    ids.push(client.id);
+  });
+  const { loading, error, data } = useQuery(GET_PROJECTS, {
+    variables: {
+      clientIds: ids,
+    },
+  });
 
+  console.log(data);
   if (loading) return <Spinner />;
-  if (error) return <h1>Something went wrong</h1>;
+  if (error) return <h1>{error.message}</h1>;
 
   return (
     <>
@@ -22,6 +32,10 @@ const Projects = () => {
       )}
     </>
   );
+};
+
+Projects.propTypes = {
+  clients: PropTypes.object,
 };
 
 export default Projects;

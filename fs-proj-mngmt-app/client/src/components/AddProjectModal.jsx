@@ -4,12 +4,19 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_PROJECTS } from "../queries/projectQueries";
 import { ADD_PROJECT } from "../mutations/projectMutations";
 import { GET_CLIENTS } from "../queries/clientQueries";
+import { useAuthContext } from "../hooks/useAuthContext";
 
-const AddProjectModal = () => {
+const AddProjectModal = ({ clients }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [clientId, setClientId] = useState("");
   const [status, setStatus] = useState("new");
+  const token = useAuthContext();
+
+  var ids = [];
+  clients.clients.forEach((client) => {
+    ids.push(client.id);
+  });
 
   const [addProject] = useMutation(ADD_PROJECT, {
     variables: {
@@ -19,16 +26,27 @@ const AddProjectModal = () => {
       status,
     },
     update(cache, { data: { addProject } }) {
-      const { projects } = cache.readQuery({ query: GET_PROJECTS });
+      const { projects } = cache.readQuery(GET_PROJECTS, {
+        variables: {
+          clientIds: ids,
+        },
+      });
       cache.writeQuery({
         query: GET_PROJECTS,
+        variables: {
+          clientIds: ids,
+        },
         data: { projects: [...projects, addProject] },
       });
     },
   });
 
   //Get Clients for select
-  const { loading, error, data } = useQuery(GET_CLIENTS);
+  const { loading, error, data } = useQuery(GET_CLIENTS, {
+    variables: {
+      userId: token.token.userId,
+    },
+  });
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -41,6 +59,7 @@ const AddProjectModal = () => {
     setDescription("");
     setStatus("new");
     setClientId("");
+    window.location.reload();
   };
 
   if (loading) return null;

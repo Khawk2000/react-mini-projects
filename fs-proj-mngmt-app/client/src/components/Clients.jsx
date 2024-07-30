@@ -1,17 +1,10 @@
-import { useQuery } from "@apollo/client";
 import ClientRow from "./ClientRow";
-import { GET_CLIENTS } from "../queries/clientQueries";
-import Spinner from "./Spinner";
+import PropTypes from "prop-types";
 
-const Clients = () => {
-  const { loading, error, data } = useQuery(GET_CLIENTS);
-
-  if (loading) return <Spinner />;
-  if (error) return <p>Something wong...</p>;
-
+const Clients = ({ clients }) => {
   return (
     <>
-      {!loading && !error && (
+      {
         <table className="table table-hover mt-3">
           <thead>
             <tr>
@@ -22,14 +15,18 @@ const Clients = () => {
             </tr>
           </thead>
           <tbody>
-            {data.clients.map((client) => (
+            {clients.clients.map((client) => (
               <ClientRow key={client.id} client={client} />
             ))}
           </tbody>
         </table>
-      )}
+      }
     </>
   );
+};
+
+Clients.propTypes = {
+  clients: PropTypes.object,
 };
 
 export default Clients;

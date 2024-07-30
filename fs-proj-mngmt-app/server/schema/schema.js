@@ -12,6 +12,7 @@ const {
   GraphQLList,
   GraphQLNonNull,
   GraphQLEnumType,
+  GraphQLInputObjectType,
 } = require("graphql");
 
 //User Type
@@ -79,20 +80,36 @@ const ProjectType = new GraphQLObjectType({
   }),
 });
 
+const ProjectInput = new GraphQLInputObjectType({
+  name: "ProjectInput",
+  fields: {
+    name: { type: GraphQLString },
+    description: { type: GraphQLString },
+    status: { type: GraphQLString },
+    client: {
+      type: ClientType,
+      resolve(parent, args) {
+        return Client.findById(parent.clientId);
+      },
+    },
+  },
+});
+
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
   fields: {
     user: {
       type: UserType,
-      args: { id: { type: GraphQLID } },
+      args: { userId: { type: GraphQLID } },
       resolve(parent, args) {
-        return User.findById(args.id);
+        return User.findById(args.userId);
       },
     },
     clients: {
       type: new GraphQLList(ClientType),
+      args: { userId: { type: GraphQLID } },
       resolve(parent, args) {
-        return Client.find();
+        return Client.find({ userId: args.userId });
       },
     },
     client: {
@@ -104,8 +121,13 @@ const RootQuery = new GraphQLObjectType({
     },
     projects: {
       type: new GraphQLList(ProjectType),
+      args: { clientIds: { type: GraphQLList(GraphQLID) } },
       resolve(parent, args) {
-        return Project.find();
+        var list = [];
+
+        return Project.find({
+          clientId: { $in: [args.clientIds[0], args.clientIds[1]] },
+        });
       },
     },
     project: {
@@ -150,7 +172,7 @@ const mutation = new GraphQLObjectType({
         const signedUser = await newUser.save();
 
         const token = jwt.sign({ userId: signedUser._id }, process.env.SECRET, {
-          expiresIn: "2h",
+          expiresIn: "10h",
         });
         return { user: signedUser, token };
       },
@@ -174,7 +196,7 @@ const mutation = new GraphQLObjectType({
         }
 
         const token = jwt.sign({ userId: user._id }, process.env.SECRET, {
-          expiresIn: "2h",
+          expiresIn: "10h",
         });
 
         return { user, token };

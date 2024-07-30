@@ -1,12 +1,18 @@
 import "./App.css";
 import Header from "./components/Header";
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Project from "./pages/Project";
-import Login from "./pages/SignUp";
+import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import { useAuthContext } from "./hooks/useAuthContext";
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -33,6 +39,8 @@ const client = new ApolloClient({
 });
 
 function App() {
+  const { token } = useAuthContext();
+
   return (
     <>
       <ApolloProvider client={client}>
@@ -40,9 +48,19 @@ function App() {
           <Header />
           <div className="container">
             <Routes>
-              <Route path="/signup" Component={SignUp} />
+              <Route
+                path="/signup"
+                element={!token ? <SignUp /> : <Navigate to="/" />}
+              />
+              <Route
+                path="/login"
+                element={!token ? <Login /> : <Navigate to="/" />}
+              />
               <Route path="/projects/:id" Component={Project} />
-              <Route exact path="/" Component={Home} />
+              <Route
+                path="/"
+                element={token ? <Home /> : <Navigate to="/signup" />}
+              />
               <Route path="*" Component={NotFound} />
             </Routes>
           </div>

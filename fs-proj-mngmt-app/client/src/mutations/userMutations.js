@@ -24,4 +24,18 @@ const SIGNUP_USER = gql`
   }
 `;
 
-export { SIGNUP_USER };
+const LOGIN_USER = gql`
+  mutation loginUser($email: String!, $password: String!) {
+    loginUser(email: $email, password: $password) {
+      user {
+        id
+        firstname
+        lastname
+        email
+      }
+      token
+    }
+  }
+`;
+
+export { SIGNUP_USER, LOGIN_USER };
