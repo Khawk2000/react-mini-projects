@@ -60,7 +60,9 @@ const AddProjectModal = ({ clients }) => {
     setDescription("");
     setStatus("new");
     setClientId("");
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 10000);
   };
 
   if (loading) return null;
