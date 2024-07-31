@@ -64,7 +64,7 @@ const AddProjectModal = ({ clients }) => {
     let timerInterval;
     Swal.fire({
       title: "Project is being uploaded to database",
-      html: "I will close in <b></b> seconds.",
+      html: "I will close in <b></b> milliseconds.",
       timer: 10000,
       timerProgressBar: true,
       didOpen: () => {
