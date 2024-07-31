@@ -6,6 +6,7 @@ import { ADD_PROJECT } from "../mutations/projectMutations";
 import { GET_CLIENTS } from "../queries/clientQueries";
 import { useAuthContext } from "../hooks/useAuthContext";
 import PropTypes from "prop-types";
+import Swal from "sweetalert2";
 
 const AddProjectModal = ({ clients }) => {
   const [name, setName] = useState("");
@@ -60,9 +61,28 @@ const AddProjectModal = ({ clients }) => {
     setDescription("");
     setStatus("new");
     setClientId("");
-    setTimeout(() => {
-      window.location.reload();
-    }, 10000);
+    let timerInterval;
+    Swal.fire({
+      title: "Project is being uploaded to database",
+      html: "I will close in <b></b> seconds.",
+      timer: 10000,
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading();
+        const timer = Swal.getPopup().querySelector("b");
+        timerInterval = setInterval(() => {
+          timer.textContent = `${Swal.getTimerLeft()}`;
+        }, 100);
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      },
+    }).then((result) => {
+      /* Read more about handling dismissals below */
+      if (result.dismiss === Swal.DismissReason.timer) {
+        window.location.reload();
+      }
+    });
   };
 
   if (loading) return null;
